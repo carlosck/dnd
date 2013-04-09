@@ -1,0 +1,157 @@
+/* - BASE HTML TEMPLATE
+------------------------------------------------- 
+	Description: Grid/Media queries CSS
+	Author:Shane Prendergast
+	Author URL:http://www.webknit.co.uk
+	Template URL:http://base.webknit.co.uk/
+/*
+
+
+/* - CONTENTS
+-------------------------------------------------
+    - Custom Grid .......................... 1.0.
+    	- Tablet Layout .................... 1.1.
+		- Mobile Layout .................... 1.2.
+		- Wide Mobile Layout ............... 1.3.
+		- High res devices ................. 1.4.
+*/
+	
+/*********************************************
+	- 1.0 -  Custom Grid. (If you want pixel perfect layouts then design pixel perfect column widths http://www.gridsystemgenerator.com/)
+			
+			http://www.gridsystemgenerator.com/gs04.php?GridWidth=1170&GridColumns=12&GridMarginLeft=30 (MY GIRD CALCULATIONS)			
+*********************************************/
+
+	.row{
+		height: auto;
+		overflow: auto;
+		clear: both;
+	}
+	.grid .one_four, .grid .two_four, .grid .three_four, .grid .four_four,
+	.grid .one_three, .grid .two_three, .grid .three_three,
+	.grid .one_two, .grid .two_two{
+		background: #666666;
+		height: 50px;
+		color: #ffffff;
+	}
+	.one_four, .two_four, .three_four, .four_four,
+	.one_three, .two_three, .three_three,
+	.one_two, .two_two{
+		float: left;
+		margin-bottom: 10px;
+		margin-left: 30px;
+		height: auto;
+		overflow: auto;
+		-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+		-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+		box-sizing: border-box;         /* Opera/IE 8+ */
+		padding: 1px 5px;
+	}
+	.one_four, .two_four, .three_four, .four_four{
+		width: 270px;
+	}
+	.one_four{
+		margin-left:0px; 
+	}
+	.one_three, .two_three, .three_three{
+		width: 370px
+	}
+	.one_three{
+		margin-left: 0;
+	}
+	.one_two, .two_two{
+		width: 570px
+	}
+	.one_two{
+		margin-left: 0;
+	}
+
+
+	/* - 1.1. - Tablet Layout: 768px. Gutters: 24px. Outer margins: 28px. Inherits styles from: Default Layout.
+	------------------------------------------ */
+	@media only screen and (min-width: 768px) and (max-width: 1169px) {
+	
+	
+	.container{
+	    margin:0 2%;
+	  	width: 96%
+	}
+	.one_four, .two_four, .three_four, .four_four,
+	.one_three, .two_three, .three_three,
+	.one_two, .two_two{
+		float: left;
+		margin-bottom: 10px;
+		margin-left: 4%;
+	}
+	.one_four, .two_four, .three_four, .four_four{
+		width: 22%;
+	}
+	.one_four{
+		margin-left: 0%;
+	}
+	.one_three, .two_three, .three_three{
+		width: 30.66666666%
+	}
+	.one_three{
+		margin-left: 0;
+	}
+	.one_two, .two_two{
+		width: 48%;
+	}
+	.one_two{
+		margin-left: 0;
+	}
+	
+	}
+	
+	/* - 1.2. - Mobile Layout: 320px. Gutters: 24px. Outer margins: 34px. Inherits styles from: Default Layout.
+	------------------------------------------ */
+	@media only screen and (max-width: 767px) {
+	
+	
+	.container{
+	    margin:0 2%;
+	  	width: 96%
+	}
+	.one_four, .two_four, .three_four, .four_four,
+	.one_three, .two_three, .three_three,
+	.one_two, .two_two{
+		float: left;
+		margin-bottom: 10px;
+		margin-left: 0%;
+		width: 100%
+	}
+	
+	
+	}
+
+	
+	/* - 1.3. - Wide Mobile Layout: 480px. Gutters: 22px. Outer margins: 22px. Inherits styles from: Default Layout.
+	------------------------------------------ */
+	@media only screen and (min-width: 480px) and (max-width: 767px) {
+	
+	.container{
+	    margin:0 2%;
+	  	width: 96%
+	}
+	
+	
+	}
+	
+	
+	/* - 1.4. - Provide higher res assets for Higher res devices 
+	------------------------------------------ */
+	@media only screen and (-webkit-min-device-pixel-ratio: 2) { 
+
+	/* EXAMPLE	
+	.logo {
+		background: url(logo2x.jpg) no-repeat;
+		background-size: 212px 303px;
+	}
+	*/
+
+	}
+	
+
+	
+	

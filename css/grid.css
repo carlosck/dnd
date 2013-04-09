@@ -1,0 +1,26 @@
+/*GRID*/
+/*You can change this params to your grid*/
+/*This takes the last margin of the last element*/
+/*This takes the first margin element*/
+.first {
+  margin-left: 0;
+  padding-left: 0;
+}
+/*This is the one that center your container, you can change the name*/
+.wrapper {
+  margin: 0 auto;
+  width: 980px;
+  overflow: hidden;
+}
+/*Column, Clear and Push calcs*/
+.clear {
+  clear: both;
+}
+.center {
+  overflow: hidden;
+  margin: 0 auto;
+  text-align: center;
+}
+.last {
+  margin-right: 0px;
+}

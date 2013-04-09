@@ -1,0 +1,42 @@
+/*GRID*/
+/*You can change this params to your grid*/
+
+@column_width: 45px;
+@gutter: 10px;
+@total_width: 980px;
+
+/*This takes the last margin of the last element*/
+
+
+/*This takes the first margin element*/
+.first {margin-left:0; padding-left:0;}
+
+/*This is the one that center your container, you can change the name*/
+.wrapper { margin:0 auto; width:@total_width; overflow:hidden; }
+
+/*Column, Clear and Push calcs*/
+.col(@x){ width: ((@column_width)*@x)+(@gutter*((@x*-1)+1)*-1); margin-right: @gutter; float: left; display: inline;}
+
+.push(@x){ margin-left: ((@column_width)*@x)+(@gutter*(@x));}
+
+.clear{clear: both;}	
+
+.center{
+	overflow: hidden;
+	margin: 0 auto;
+	text-align: center;
+	
+}
+
+.margin-top(@y){
+	margin-top: (@y);
+}
+
+.margin-bottom(@x){
+	margin-bottom: (@x);
+}
+
+.last {margin-right: 0px;}
+
+
+ 

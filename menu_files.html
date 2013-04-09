@@ -1,0 +1,179 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!-- Consider adding a manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/libs/modernizr-2.5.3.min.js"></script>
+  <style>
+  #ckmenu_container
+  {
+    width: 100%;
+    height: 50px;
+  }
+  .elements_files
+  {
+    width: 100px;
+    height: 50px;
+    text-align: center;
+    float: left;
+  }
+  </style>
+</head>
+<body id="body" class="index_dragt">
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+  <div id="ckmenu_container" class="no_dragt">
+    
+  </div>
+  <div id="directories" class="index_dragt file_folder columna8" laurl="/">
+  </div>
+  <div id="controls">
+  </div>
+  <script>
+  if(!window.jQuery)
+    {
+      document.write('<script src="js/libs/jquery-1.9.1.js"><\/script>');      
+      document.write('<script src="js/core/menu_actions.js"><\/script>');
+      document.write('<script src="js/core/keyboard_actions.js"><\/script>');
+      document.write('<script src="js/core/elements_arrays.js"><\/script>');
+      document.write('<script src="js/core/robot.js"><\/script>');
+      document.write('<script src="js/core/script.js"><\/script>');
+      document.write('<script src="js/addons/file_actions/file_actions.js"><\/script>');
+      document.write('<script src="js/libs/jquery-ui-1.10.1.custom.min.js"><\/script>');
+      
+    }
+
+      </script>
+
+  <!-- scripts concatenated and minified via build script -->
+  
+<link href="css/ui-lightness/jquery-ui-1.10.1.custom.css" rel="stylesheet">
+
+  <!-- end scripts -->
+
+  <!-- Asynchronous Google Analytics snippet. Change UA-XXXXX-X to be your site's ID.
+       mathiasbynens.be/notes/async-analytics-snippet -->
+  <script>
+    var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+    (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+    g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+    s.parentNode.insertBefore(g,s)}(document,'script'));
+  </script>
+  <script>
+  $(function() {
+    initFS();
+  });
+  window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
+  var fs = null;
+  
+  function errorHandler(e) {
+    var msg = '';
+    switch (e.code) {
+      case FileError.QUOTA_EXCEEDED_ERR:
+        msg = 'QUOTA_EXCEEDED_ERR';
+        break;
+      case FileError.NOT_FOUND_ERR:
+        msg = 'NOT_FOUND_ERR';
+        break;
+      case FileError.SECURITY_ERR:
+        msg = 'SECURITY_ERR';
+        break;
+      case FileError.INVALID_MODIFICATION_ERR:
+        msg = 'INVALID_MODIFICATION_ERR';
+        break;
+      case FileError.INVALID_STATE_ERR:
+        msg = 'INVALID_STATE_ERR';
+        break;
+      default:
+        msg = 'Unknown Error';
+        break;
+    };
+    document.querySelector('#example-list-fs-ul').innerHTML = 'Error: ' + msg;
+  }
+  
+  function initFS() {
+    window.webkitStorageInfo.requestQuota(PERSISTENT, 5*1024*1024, function(grantedBytes) {
+            window.requestFileSystem(PERSISTENT, grantedBytes, function(fs){load_files_fs(fs)}, errorHandler);
+          }, function(e) {
+            console.log('Error', e);
+          });
+  }
+  
+ 
+  
+  
+    
+  function load_files_fs(fs)
+  {
+      filelist=$("#directories");
+      var dirReader = fs.root.createReader();
+      dirReader.readEntries(function(entries) {
+        if (!entries.length) {
+          filelist.html('Filesystem is empty.') ;
+        } else {
+          filelist.html('') ;
+        }
+    
+
+        
+        for (var i = 0, entry; entry = entries[i]; ++i) {
+          var img="";
+          var cadena=""
+          console.log(entry);
+          if(entry.isDirectory)
+          {
+            img = '<img src="http://www.html5rocks.com/static/images/tutorials/icon-folder.gif">';
+            cadena="<div class='columna5 file_folder' laurl='"+entry.fullPath+"'>";
+          } 
+          else
+          {
+            img = '<img src="http://www.html5rocks.com/static/images/tutorials/icon-file.gif">';
+            cadena="<div class='columna5 file_file'>";
+          }
+          
+                                        
+          
+          cadena+= [img, '<span>', entry.name, '</span>'].join('');
+          cadena+="</div>";
+          filelist.append(cadena)
+        }
+        
+      }, errorHandler);
+    
+    
+    
+    /*
+      var dirReader = fs.root.createReader();
+      dirReader.readEntries(function(entries) {
+        for (var i = 0, entry; entry = entries[i]; ++i) {
+          if (entry.isDirectory) {
+            entry.removeRecursively(function() {}, errorHandler);
+          } else {
+            entry.remove(function() {}, errorHandler);
+          }
+        }
+        filelist.innerHTML = 'Directory emptied.';
+      }, errorHandler);
+    }, false); */
+  }
+    
+      
+  
+  
+  
+  </script>
+</body>
+</html>
+
+
