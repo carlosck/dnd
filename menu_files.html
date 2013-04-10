@@ -27,6 +27,18 @@
     text-align: center;
     float: left;
   }
+  .file_folder
+  {
+    background: url("http://www.html5rocks.com/static/images/tutorials/icon-folder.gif") no-repeat;
+  }
+  .file_file
+  {
+    background: url("http://www.html5rocks.com/static/images/tutorials/icon-file.gif") no-repeat;
+  }
+  .file_file span
+  {
+    margin-left: 20px;
+  }
   </style>
 </head>
 <body id="body" class="index_dragt">
@@ -99,78 +111,17 @@
         msg = 'Unknown Error';
         break;
     };
-    document.querySelector('#example-list-fs-ul').innerHTML = 'Error: ' + msg;
+    //document.querySelector('#example-list-fs-ul').innerHTML = 'Error: ' + msg;
+    console.log(msg);
   }
   
   function initFS() {
-    window.webkitStorageInfo.requestQuota(PERSISTENT, 5*1024*1024, function(grantedBytes) {
+    window.webkitStorageInfo.requestQuota(PERSISTENT, 50*1024*1024, function(grantedBytes) {
             window.requestFileSystem(PERSISTENT, grantedBytes, function(fs){load_files_fs(fs)}, errorHandler);
           }, function(e) {
             console.log('Error', e);
           });
   }
-  
- 
-  
-  
-    
-  function load_files_fs(fs)
-  {
-      filelist=$("#directories");
-      var dirReader = fs.root.createReader();
-      dirReader.readEntries(function(entries) {
-        if (!entries.length) {
-          filelist.html('Filesystem is empty.') ;
-        } else {
-          filelist.html('') ;
-        }
-    
-
-        
-        for (var i = 0, entry; entry = entries[i]; ++i) {
-          var img="";
-          var cadena=""
-          console.log(entry);
-          if(entry.isDirectory)
-          {
-            img = '<img src="http://www.html5rocks.com/static/images/tutorials/icon-folder.gif">';
-            cadena="<div class='columna5 file_folder' laurl='"+entry.fullPath+"'>";
-          } 
-          else
-          {
-            img = '<img src="http://www.html5rocks.com/static/images/tutorials/icon-file.gif">';
-            cadena="<div class='columna5 file_file'>";
-          }
-          
-                                        
-          
-          cadena+= [img, '<span>', entry.name, '</span>'].join('');
-          cadena+="</div>";
-          filelist.append(cadena)
-        }
-        
-      }, errorHandler);
-    
-    
-    
-    /*
-      var dirReader = fs.root.createReader();
-      dirReader.readEntries(function(entries) {
-        for (var i = 0, entry; entry = entries[i]; ++i) {
-          if (entry.isDirectory) {
-            entry.removeRecursively(function() {}, errorHandler);
-          } else {
-            entry.remove(function() {}, errorHandler);
-          }
-        }
-        filelist.innerHTML = 'Directory emptied.';
-      }, errorHandler);
-    }, false); */
-  }
-    
-      
-  
-  
   
   </script>
 </body>

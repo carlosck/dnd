@@ -96,7 +96,7 @@ function index_Drop(event)
 	
 	drop_generic(event);
 }
-function drop_generic()
+function drop_generic(event)
 {
 	console.log("drop_generic");
 	event.preventDefault();
