@@ -202,8 +202,8 @@ function index_mouse_down(event)
 }
 function index_click(event)
 {
-	event.preventDefault();
-	event.stopPropagation();
+	//event.preventDefault();
+	//event.stopPropagation();
 	var target_id=$("#"+event.target.id);
 		
 	

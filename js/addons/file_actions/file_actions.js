@@ -34,8 +34,6 @@ $(function() {
 		  			dataType: "text",
 		  			success: function(data) {		 			
 		  				$("#ckmenu_container").append(data);
-		  				
-		  				//console.log($("#new_folder"));
 		  				$("#new_folder")[0].addEventListener('dragstart', menu_file_dragStart, false);   
 		  				$("#new_folder")[0].addEventListener('drop', menu_file_drop, false);
 		  				$("#new_folder").attr("draggable",'true');
@@ -62,12 +60,47 @@ function file_actions()
 		event.preventDefault();
 		if(elemento_arenombrar!=null)
 		{
-			file_rename_fs(nombre_anterior,elemento_arenombrar.find("span").html());			
+			file_rename_fs(elemento_arenombrar.attr("dirurl"),nombre_anterior,elemento_arenombrar.find("span a").html());			
 		}
 	});
 	$("#file_rename_no").bind("click",function(event){
 		event.preventDefault();
 		controls_hide();
+		  elemento_arenombrar=null;
+	});
+	$("#file_folder_rename_yes").bind("click",function(event){
+		event.preventDefault();
+		if(elemento_arenombrar!=null)
+		{			
+			file_folder_rename_fs(elemento_arenombrar.attr("dirurl"),nombre_anterior,elemento_arenombrar.find("span").html());			
+		}
+	});
+	$("#file_folder_rename_no").bind("click",function(event){
+		event.preventDefault();
+		controls_hide();
+		  elemento_arenombrar=null;
+	});
+	$("#file_folder_delete_yes").bind("click",function(event){
+		event.preventDefault();
+		console.log(target_menu);
+		if(target_menu.hasClass("file_file"))
+		{
+			file_delete(target_menu);
+			controls_hide();
+		}
+		else
+		{
+			if(target_menu.hasClass("file_folder"))
+			{
+				file_folder_delete(target_menu);
+				controls_hide();
+			}	
+		}
+	});
+	$("#file_folder_rename_no").bind("click",function(event){
+		event.preventDefault();
+		controls_hide();
+
 		  elemento_arenombrar=null;
 	});
 
@@ -108,6 +141,24 @@ function file_actions_menu()
 		console.log("mover archivo "+file_name+" a"+folder_name);
 		file_move_fs(file_name,folder_name);
 	});
+	drop_actions["file_folder"]=new DropActions("file_folder",function(eldiv,event_){
+		if(!eldiv.hasClass("file_folder"))
+		{
+			return false;
+			event_.preventDefault();
+			event_.stopPropagation();
+		}
+		console.log(event_);
+		var data=event.dataTransfer.getData("Text");
+		var elid=event.dataTransfer.getData("elid");	
+		var folder_name=$("#"+event_.target.id).attr("laurl");
+		var folder_url_name=$("#"+event_.target.id).attr("dirurl");
+
+		var file_name=$("#"+event.dataTransfer.getData("elid")).attr("laurl");
+		var file_url_name=eldiv.attr("dirurl");
+		console.log("mover fodler "+file_name+" a"+folder_name);
+		file_folder_move_fs(file_name,folder_name);
+	});
 }
 function file_create(e)
 {
@@ -137,15 +188,15 @@ function file_asign_actions(div)
 }
 function folder_asign_actions(div)
 {
-	$("#"+div)[0].addEventListener('dragstart', folder_drags|tart, false);	
+	$("#"+div)[0].addEventListener('dragstart', folder_dragstart, false);	
 	$("#"+div)[0].addEventListener('dragover', index_DragOver, false);
 	$("#"+div)[0].addEventListener('dragleave', index_dragleave, false);
-	$("#"+div)[0].addEventListener('drop', folder_drop, false);
+	//$("#"+div)[0].addEventListener('drop', folder_drop, false);
 	$("#"+div)[0].addEventListener('dragend', index_DragEnd, false);
 	$("#"+div)[0].addEventListener('mouseover', index_mouse_over, false);
 	$("#"+div)[0].addEventListener('mouseout', index_mouse_out, false);
 	$("#"+div).bind('click', index_click);
-	$("#"+div).bind('dblclick', folder_dblclick);
+	$("#"+div).bind('focusout', folder_rename);
 }
 function file_drop(event)
 {
@@ -185,8 +236,7 @@ function file_drop(event)
 			event.stopPropagation();
 			return false;
 			break;
-		}
-		
+		}		
 	}
 	drop_generic(event);
 }
@@ -210,7 +260,7 @@ function folder_dragstart(event)
 	event.stopPropagation();	
 	event.dataTransfer.setData('text', "file_folder");	
 	event.dataTransfer.setData('elid', event.target.id);
-	console.log("draaag file " +event.target.id);
+	console.log("drag folder " +event.target.id);
 }
 function menu_file_drop(event)
 {
@@ -235,8 +285,6 @@ function create_directory(nombre)
 	}, function(e) {
 	  console.log('Error', e);
 	});
-	
-
 }
 function file_rename(event)
 {	
@@ -244,38 +292,98 @@ function file_rename(event)
 	elemento_arenombrar=$("#"+event.target.id);
 	controls_show();	
 }
-function file_rename_fs(original_,new_)
+function folder_rename(event)
+{	
+	nombre_anterior=$("#"+event.target.id).attr("laurl").replace($("#"+event.target.id).attr("dirurl"),"");
+	nombre_anterior=$("#"+event.target.id).attr("laurl");
+	elemento_arenombrar=$("#"+event.target.id);
+	$("#file_folder_rename").show();
+	controls_show();	
+}
+function file_rename_fs(pwd,original_,new_)
 {
-	//original_=original_.replace("/","");
-	//new_=new_.replace("/","");
-	console.log("reenmobrar de "+original_+" a "+new_);
+	console.log("renombrar de "+original_+" a "+new_);
 	
 	window.requestFileSystem(PERSISTENT, 50*1024*1024, function(fs){
 		fs.root.getFile(original_, {}, function(fileEntry) {
-	    fileEntry.moveTo(fs.root, new_);
+			fs.root.getDirectory(pwd, {}, function(dirEntry2) {
+	    fileEntry.moveTo(dirEntry2,new_);
+	    }, errorHandler);	    
 	    controls_hide();
 	    elemento_arenombrar=null;
 	  }, errorHandler);
 	}, errorHandler);
 
-	
 }
+function file_folder_rename_fs(pwd,original_,new_)
+{	
+	window.requestFileSystem(PERSISTENT, 50*1024*1024, function(fs){				
+		fs.root.getDirectory(original_, {}, function(dirEntry) {
+			fs.root.getDirectory(pwd, {}, function(dirEntry2) {
+	    dirEntry.moveTo(dirEntry2,new_);
+	    }, errorHandler);
+	    controls_hide();
+	    elemento_arenombrar=null;
+	  }, errorHandler);
+	}, errorHandler);
+}
+
 function file_move_fs(archivo,carpeta)
 {
 	carpeta=carpeta.replace("/","");
 	carpeta=carpeta+"/";
 	archivo=archivo.replace("/","");
-	archivo="song.mp3";
-	carpeta="/foldercuatro";
+	console.log("archivo  |"+archivo+"| carpeta |"+carpeta+"|");
 	window.requestFileSystem(PERSISTENT, 50*1024*1024, function(fs) {
 	  fs.root.getFile(archivo, {}, function(fileEntry) {
 
 	      fs.root.getDirectory(carpeta, {}, function(dirEntry) {
 	        fileEntry.moveTo(dirEntry);
+	        load_files_fs(fs);
 	      }, errorHandler);
 
 	    }, errorHandler);
 	}, errorHandler);
+}
+function file_folder_move_fs(archivo,carpeta)
+{
+	carpeta=carpeta.replace("/","");
+	carpeta=carpeta+"/";
+	archivo=archivo.replace("/","");
+	
+	window.requestFileSystem(PERSISTENT, 50*1024*1024, function(fs) {
+	  fs.root.getDirectory(archivo, {}, function(dirEntry) {
+
+	      fs.root.getDirectory(carpeta, {}, function(dirEntry_destino) {
+	        dirEntry.moveTo(dirEntry_destino);
+	        $("#directories").html("");	        
+	        load_files_fs(fs)
+	      }, errorHandler);
+	    }, errorHandler);
+	}, errorHandler);
+}
+function file_delete(eldiv)
+{
+	console.log(eldiv.attr("laurl"));
+	window.requestFileSystem(PERSISTENT, 50*1024*1024, function(fs){				
+		fs.root.getFile(eldiv.attr("laurl"), {}, function(fileEntry) {			
+	    fileEntry.remove(function() {
+      		load_files_fs(fs);
+    }, errorHandler);    	    
+	  }, errorHandler);
+	}, errorHandler);
+}
+function file_folder_delete(eldiv)
+{
+	console.log(eldiv.attr("laurl"));
+	window.requestFileSystem(PERSISTENT, 50*1024*1024, function(fs){				
+		fs.root.getDirectory(eldiv.attr("laurl"), {}, function(dirEntry) {			
+	    dirEntry.removeRecursively(function() {
+      		load_files_fs(fs);
+    }, errorHandler);    
+	  }, errorHandler);
+	}, errorHandler);
+
 }
 function show_file_popup()
 {
@@ -283,135 +391,43 @@ function show_file_popup()
 }
 
 function load_files_fs(fs)
-  {
-      getAllFileEntries(fs.root.createReader(), $("#directories"),0);
-      /*filelist=$("#directories");
-      var dirReader = fs.root.createReader();
-      dirReader.readEntries(function(entries) {
-        if (!entries.length) {
-          filelist.html('Filesystem is empty.') ;
-        } else {
-          filelist.html('') ;
-        }
-    
-
-        
-        for (var i = 0, entry; entry = entries[i]; ++i) {
-          var img="";
-          var cadena=""          
-          if(entry.isDirectory)
-          {
-            img = '<img src="http://www.html5rocks.com/static/images/tutorials/icon-folder.gif">';
-            cadena="<div id='file_folder_"+entry.name+"' class='columna5 file_folder index_dragt' laurl='"+entry.fullPath+"' dirurl='"+entry.fullPath.replace(entry.name,"")+"'>";
-            cadena+= [img, '<span>', entry.name, '</span>'].join('');
-          	cadena+="</div>";
-          	filelist.append(cadena);
-          	//folder_asign_actions("file_folder_"+entry.name);
-          	
-          } 
-          else
-          {
-            var name=entry.name;
-            var name_file=(entry.name).replace(".","_");
-            img = '<img src="http://www.html5rocks.com/static/images/tutorials/icon-file.gif">';
-            cadena="<div id='file_file_"+name_file+"' class='columna5 file_file index_dragt' draggable='true' laurl='"+entry.fullPath+"' dirurl='"+entry.fullPath.replace(entry.name,"")+"'>";
-            cadena+= [img, '<span>', name, '</span>'].join('');
-          	cadena+="</div>";
-          	filelist.append(cadena);
-          	file_asign_actions("file_file_"+name_file);
-          	
-          }
-          
-        }
-        
-      }, errorHandler);
-    
-    
-    
-    /*
-      var dirReader = fs.root.createReader();
-      dirReader.readEntries(function(entries) {
-        for (var i = 0, entry; entry = entries[i]; ++i) {
-          if (entry.isDirectory) {
-            entry.removeRecursively(function() {}, errorHandler);
-          } else {
-            entry.remove(function() {}, errorHandler);
-          }
-        }
-        filelist.innerHTML = 'Directory emptied.';
-      }, errorHandler);
-    }, false); */
-  }
-
-  function toArray(list) {
-  return Array.prototype.slice.call(list || [], 0);
+{
+    //console.log("load_files_fs");
+    $("#directories").html(" ");
+    getAllFileEntries(fs.root.createReader(), $("#directories"),0);      
 }
-  function listResults(entries) {
-  // Document fragments can improve performance since they're only appended
-  // to the DOM once. Only one browser reflow occurs.
-  var fragment = document.createDocumentFragment();
-
-  entries.forEach(function(entry, i) {
-    var img = entry.isDirectory ? '<img src="folder-icon.gif">' :
-                                  '<img src="file-icon.gif">';
-    var li = document.createElement('li');
-    li.innerHTML = [img, '<span>', entry.name, '</span>'].join('');
-    fragment.appendChild(li);
-  });
-
-  document.querySelector('#new_folder').appendChild(fragment);
-}
-  /*function read_directory()
-  {
-  	window.requestFileSystem(PERSISTENT, 50*1024*1024, function(fs)
-  	{
-  		var dirReader = fs.root.createReader();
-  		  var entries = [];
-
-  		  // Call the reader.readEntries() until no more results are returned.
-  		  var readEntries = function() {
-  		     dirReader.readEntries (function(results) {
-  		      if (!results.length) {
-  		        listResults(entries.sort());
-  		      } else {
-  		        entries = entries.concat(toArray(results));
-  		        readEntries();
-  		      }
-  		    }, errorHandler);
-  		  };
-
-  		  readEntries(); // Start reading dirs.
-  	}
-  		, errorHandler);
-  }*/
+  
   
 function getAllFileEntries(dirReader, eldiv,lvl_) 
 {	
-  lvl_interno=lvl_+1;
+  
   dirReader.readEntries(function(entries)
   {
   	for (var i = 0, entry; entry = entries[i]; ++i) {
   	  if (entry.isDirectory) 
   	  {
-  	  img = '<img src="http://www.html5rocks.com/static/images/tutorials/icon-folder.gif">';
-            cadena="<div id='file_folder_"+entry.name+"' class='columna5 file_folder index_dragt' laurl='"+entry.fullPath+"' dirurl='"+entry.fullPath.replace(entry.name,"")+"'>";
-            cadena+=  '<span style="margin-left:'+(lvl_interno*20)+'px">'+ entry.name+ '</span>';
+  	 
+            cadena="<div id='file_folder_"+entry.name+"' style='margin-left:"+(lvl_*20)+"px' class='columna5 file_folder index_dragt' draggable='true' laurl='"+entry.fullPath+"' dirurl='"+entry.fullPath.replace(entry.name,"")+"'>";
+            cadena+=  '<span >'+ entry.name+ '</span>';
           	cadena+="</div>";
+          	//console.log(entry.name+" "+lvl_);
           	eldiv.append(cadena);
-
+          	folder_asign_actions("file_folder_"+entry.name);
+          	lvl_interno=lvl_+1;
   	    getAllFileEntries(entry.createReader(), $("#file_folder_"+entry.name),lvl_interno);
+  	    lvl_interno=lvl_-1;
   	  } 
   	  else 
   	  {
   	    var name=entry.name;
         var name_file=(entry.name).replace(".","_");
-        img = '<img src="http://www.html5rocks.com/static/images/tutorials/icon-file.gif">';
-        cadena="<div id='file_file_"+name_file+"' class='columna5 file_file index_dragt' draggable='true' laurl='"+entry.fullPath+"' dirurl='"+entry.fullPath.replace(entry.name,"")+"'>";
-        cadena+= '<span style="margin-left:'+(lvl_interno*20)+'px">'+ name+ '</span>';
+        
+        cadena="<div id='file_file_"+name_file+"' style='margin-left:"+(lvl_*20)+"px' class='columna5 file_file index_dragt' draggable='true' laurl='"+entry.fullPath+"' dirurl='"+entry.fullPath.replace(entry.name,"")+"'>";
+        cadena+= '<span ><a href="'+entry.toURL()+'" target="_blank">'+ name+ '</a></span>';
         cadena+="</div>";
         eldiv.append(cadena);
         file_asign_actions("file_file_"+name_file);
-  	    console.log(entry.name)
+  	    //console.log(entry.name +" "+lvl_);
   	  }
   	}	
   });
