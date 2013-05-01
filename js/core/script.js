@@ -626,7 +626,7 @@ console.log("div_importa_images");
 		target_menu=eldivs;
 		console.log(fileEntry.toURL());
 		if(lafuncion!=null)
-		lafuncion(fileEntry.toURL());
+		lafuncion(fileEntry.toURL(),eldivs);
        }
       
       fileWriter.seek(fileWriter.length); // Start write position at EOF.
