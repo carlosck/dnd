@@ -14,63 +14,29 @@
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/libs/modernizr-2.5.3.min.js"></script>
-  <style>
-  #ckmenu_container
-  {
-    width: 100%;
-    height: 50px;
-  }
-  .elements_files
-  {
-    width: 100px;
-    height: 50px;
-    text-align: center;
-    float: left;
-  }
-  .file_folder
-  {
-    background: url("http://www.html5rocks.com/static/images/tutorials/icon-folder.gif") no-repeat;
-  }
-  .file_folder span
-  {
-    margin-left: 20px;
-  }
-  .file_file
-  {
-    background: url("http://www.html5rocks.com/static/images/tutorials/icon-file.gif") no-repeat;
-  }
-  .file_file span
-  {
-    margin-left: 20px;
-  }
-  #directories
-  {
-    min-height: 50px;
-  }
-  .file_folder.selected{background-color: lightgray;border: 1px solid aqua;}
-  </style>
 </head>
 <body id="body" class="index_dragt">
   <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
        chromium.org/developers/how-tos/chrome-frame-getting-started -->
   <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
-  <div id="ckmenu_container" class="no_dragt">
-    
-  </div>
-  <div id="directories" class="no_dragt file_folder columna8" laurl="/" style="border: 1px solid red;">
-  </div>
-  <div id="controls">
-  </div>
+  <div id="ckmenu_container">
+    <div id="div_element" class="menu_element menu_div columna4" draggable="true" style="border: 1px solid lightblue;height: 50px;">
+		DIV
+	</div>
+
+</div>
+  
   <script>
   if(!window.jQuery)
     {
-      document.write('<script src="js/libs/jquery-1.9.1.js"><\/script>');      
+      document.write('<script src="js/libs/jquery-1.9.1.js"><\/script>'); 
+      document.write('<script src="js/core/config.js"><\/script>');     
       document.write('<script src="js/core/menu_actions.js"><\/script>');
       document.write('<script src="js/core/keyboard_actions.js"><\/script>');
       document.write('<script src="js/core/elements_arrays.js"><\/script>');
       document.write('<script src="js/core/robot.js"><\/script>');
       document.write('<script src="js/core/script.js"><\/script>');
-      document.write('<script src="js/addons/file_actions/file_actions.js"><\/script>');
+      document.write('<script src="js/addons/link_actions/link_actions.js"><\/script>');      
       document.write('<script src="js/libs/jquery-ui-1.10.1.custom.min.js"><\/script>');
       
     }
@@ -90,48 +56,6 @@
     (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
     g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
     s.parentNode.insertBefore(g,s)}(document,'script'));
-  </script>
-  <script>
-  $(function() {
-    initFS();
-  });
-  window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
-  var fs = null;
-  
-  function errorHandler(e) {
-    var msg = '';
-    switch (e.code) {
-      case FileError.QUOTA_EXCEEDED_ERR:
-        msg = 'QUOTA_EXCEEDED_ERR';
-        break;
-      case FileError.NOT_FOUND_ERR:
-        msg = 'NOT_FOUND_ERR';
-        break;
-      case FileError.SECURITY_ERR:
-        msg = 'SECURITY_ERR';
-        break;
-      case FileError.INVALID_MODIFICATION_ERR:
-        msg = 'INVALID_MODIFICATION_ERR';
-        break;
-      case FileError.INVALID_STATE_ERR:
-        msg = 'INVALID_STATE_ERR';
-        break;
-      default:
-        msg = 'Unknown Error';
-        break;
-    };
-    //document.querySelector('#example-list-fs-ul').innerHTML = 'Error: ' + msg;
-    console.log(msg);
-  }
-  
-  function initFS() {
-    window.webkitStorageInfo.requestQuota(PERSISTENT, 50*1024*1024, function(grantedBytes) {
-            window.requestFileSystem(PERSISTENT, grantedBytes, function(fs){load_files_fs(fs)}, errorHandler);
-          }, function(e) {
-            console.log('Error', e);
-          });
-  }
-  
   </script>
 </body>
 </html>

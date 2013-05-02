@@ -13,7 +13,7 @@ $(function() {
 		  if($("#controls")[0])
 		  {
 		  $.ajax({
-		 		url: 'js/addons/file_actions/file_actions.html',
+		 		url: PATH+'dnd/js/addons/file_actions/file_actions.html',
 		 		type: 'get',
 		 		data: {},
 		 		dataType: "text",
@@ -28,7 +28,7 @@ $(function() {
 		  if($("#ckmenu_container")[0])
 		  {
 		  	 $.ajax({
-		  			url: 'js/addons/file_actions/file_actions_menu.html',
+		  			url: PATH+'/dnd/js/addons/file_actions/file_actions_menu.html',
 		  			type: 'get',
 		  			data: {},
 		  			dataType: "text",
@@ -152,6 +152,7 @@ function file_actions_menu()
 				console.log("mover archivo 1->"+file_name+" a"+folder_name);
 				file_move_fs(file_name,folder_name);
 				found=true;
+				return false;
 			}
 			if(eldiv.hasClass("file_file"))
 			{
@@ -166,6 +167,7 @@ function file_actions_menu()
 				console.log("mover archivo "+file_name+" a"+folder_url_name);
 				file_move_fs(file_name,folder_name);
 				found=true;
+				return false;
 			}
 			if(eldiv.hasClass("index_dragt"))
 			{
@@ -185,7 +187,13 @@ function file_actions_menu()
 						ruta_imagen_temporal="filesystem:http://localhost/persistent"+laurl;
 						target_menu=eldiv;
 						controls_show();
-				break;		
+				break;
+				case ".html":
+				case ".php":
+						if(eldiv.is("a"))
+						{
+							eldiv.attr("href",laurl);
+						}
 				}
 				return false;
 				
@@ -292,29 +300,16 @@ function file_drop(event)
 		console.log("files.length="+files.length);
 		if(files.length>0)
 		{
-			var file=files[0];
-			console.log(file);
-			switch(file.type)
-			{
-				case "text/html":
-				var reader = new FileReader();		 		
-				reader.onload = handleReaderLoad_html;		 
-				reader.readAsDataURL(file);
-				break;
-				case "image/jpeg":
-				case "image/png":
-				case "image/gif":
-				window.webkitStorageInfo.requestQuota(PERSISTENT, 5*1024*1024, function(grantedBytes) {
-				  window.requestFileSystem(PERSISTENT, grantedBytes, function(fs){folder_import_image(fs,file,eldiv,null)}, errorHandler);
-				}, function(e) {
-				  console.log('Error', e);
-				});
-				event.preventDefault();
-				event.stopPropagation();
-				return false;
-				break;
-			}
-			
+			window.webkitStorageInfo.requestQuota(PERSISTENT, 5*1024*1024, function(grantedBytes) 
+			{			
+				window.requestFileSystem(PERSISTENT, grantedBytes, function(fs){folder_import_image(fs,files,eldiv,null)}, errorHandler);														
+			}, function(e) {
+					  console.log('Error', e);
+					});				
+			event.preventDefault();
+			event.stopPropagation();
+			return false;
+				
 		}
 		
 		//ev.target.appendChild(document.getElementById(data));	
@@ -327,16 +322,23 @@ function folder_drop(event)
 {
 	console.log("folder_drop");
 	console.log(event);
-	event.preventDefault();
-	event.stopPropagation();
 	var data=event.dataTransfer.getData("Text");
 	var elid=event.dataTransfer.getData("elid");	
 	var eldom=event.target;
+	var eldiv=$("#"+eldom.id);
+	if(event.target.id==undefined || event.target.id.length==0)
+	{				
+		event.target.id="404"+parseInt(Math.random()*5000);
+		eldiv=$("#"+event.target.id).closest(".file_folder");		
+	}
+	event.preventDefault();
+	event.stopPropagation();
+	
 	var found=false;
 	console.log("---------------");
 	console.log(data);
 	console.log(eldom.id);
-	var eldiv=$("#"+eldom.id);
+	
 	if(event.dataTransfer.getData("elid")==eldom.id)
 	{
 		console.log("es el mismo->");
@@ -346,28 +348,15 @@ function folder_drop(event)
 	console.log("files.length="+files.length);
 	if(files.length>0)
 	{
-		var file=files[0];
-		console.log(file);
-		switch(file.type)
-		{
-			case "text/html":
-			var reader = new FileReader();		 		
-			reader.onload = handleReaderLoad_html;		 
-			reader.readAsDataURL(file);
-			break;
-			case "image/jpeg":
-			case "image/png":
-			case "image/gif":
-			window.webkitStorageInfo.requestQuota(PERSISTENT, 5*1024*1024, function(grantedBytes) {
-			  window.requestFileSystem(PERSISTENT, grantedBytes, function(fs){folder_import_image(fs,file,eldiv,null)}, errorHandler);
-			}, function(e) {
-			  console.log('Error', e);
-			});
-			event.preventDefault();
-			event.stopPropagation();
-			return false;
-			break;
-		}
+		window.webkitStorageInfo.requestQuota(PERSISTENT, 5*1024*1024, function(grantedBytes) 
+		{			
+			window.requestFileSystem(PERSISTENT, grantedBytes, function(fs){folder_import_image(fs,files,eldiv,null)}, errorHandler);														
+		}, function(e) {
+				  console.log('Error', e);
+				});				
+		event.preventDefault();
+		event.stopPropagation();
+		return false;
 		
 	}
 	
@@ -485,7 +474,8 @@ function file_move_fs(archivo,carpeta)
 	console.log("archivo  |"+archivo+"| carpeta |"+carpeta+"|");
 	window.requestFileSystem(PERSISTENT, 50*1024*1024, function(fs) {
 	  fs.root.getFile(archivo, {}, function(fileEntry) {
-
+	  	console.log(fileEntry);
+	  	
 	      fs.root.getDirectory(carpeta, {}, function(dirEntry) {
 	        fileEntry.moveTo(dirEntry);
 	        load_files_fs(fs);
@@ -591,13 +581,18 @@ function getAllFileEntries(dirReader, eldiv,lvl_)
 
   
 }
-function folder_import_image(fs,file,eldivs,lafuncion) {
+function folder_import_image(fs,files,eldivs,lafuncion) {
 console.log("folder_import_image");
+var files_loaded=0;
 var laurl=eldivs.attr("laurl");
 if(laurl.length>1)
 {
 	laurl=laurl+'/';
 }
+ for(var i=0;i<files.length;i++)
+ {
+ 	console.log("crear "+laurl+files.name);
+ 	var file=files[i];
   fs.root.getFile(laurl+file.name, {create: true}, function(fileEntry) {
 
     // Create a FileWriter object for our FileEntry (log.txt).
@@ -614,7 +609,13 @@ if(laurl.length>1)
       fileWriter.onwriteend = function(trunc) {
          fileWriter.onwriteend = null; // Avoid an infinite loop.        
          fileWriter.write(file);
-       load_files_fs(fs);
+         files_loaded++;
+         console.log("files_loaded="+files_loaded);
+       	if(files_loaded==files.length)
+       	{
+       		load_files_fs(fs);	
+       	}
+       	
        }
       
       fileWriter.seek(fileWriter.length); // Start write position at EOF.
@@ -625,14 +626,11 @@ if(laurl.length>1)
     }, errorHandler);
 
   }, errorHandler);
+}
 
 }
-var i=0;
-function file_move(eldiv,event)
-{
-	
-	
-}
+
+
 
 
  

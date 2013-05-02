@@ -3,7 +3,7 @@ var assistant_active=false;
 function agrega_menu()
 {
 	 $.ajax({
-	 		url: 'templates/menu.html',
+	 		url: PATH+'dnd/templates/menu.html',
 	 		type: 'get',
 	 		data: {},
 	 		dataType: "text",

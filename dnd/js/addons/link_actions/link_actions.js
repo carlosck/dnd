@@ -6,7 +6,7 @@ $(function() {
 		  if($("#controls")[0])
 		  {
 		  $.ajax({
-		 		url: 'js/addons/link_actions/link_actions.html',
+		 		url: PATH+'dnd/js/addons/link_actions/link_actions.html',
 		 		type: 'get',
 		 		data: {},
 		 		dataType: "text",
@@ -21,7 +21,7 @@ $(function() {
 		  if($("#ckmenu_container")[0])
 		  {
 		  	 $.ajax({
-		  			url: 'js/addons/link_actions/link_actions_menu.html',
+		  			url: PATH+'dnd/js/addons/link_actions/link_actions_menu.html',
 		  			type: 'get',
 		  			data: {},
 		  			dataType: "text",
