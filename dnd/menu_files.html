@@ -127,7 +127,7 @@
   
   function initFS() {
     window.webkitStorageInfo.requestQuota(PERSISTENT, 50*1024*1024, function(grantedBytes) {
-            window.requestFileSystem(PERSISTENT, grantedBytes, function(fs){load_files_fs(fs)}, errorHandler);
+            window.requestFileSystem(PERSISTENT, grantedBytes, function(fsy){fs=fsy;load_files_fs(fs);}, errorHandler);
           }, function(e) {
             console.log('Error', e);
           });

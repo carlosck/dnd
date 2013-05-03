@@ -414,7 +414,7 @@ function create_directory(nombre)
 {
 	window.webkitStorageInfo.requestQuota(PERSISTENT, 5*1024*1024, function(grantedBytes) {
 	  window.requestFileSystem(PERSISTENT, grantedBytes, function(fs){
-	  	fs.root.getDirectory(nombre, {create: true}, function(dirEntry) {
+	  	fs.root.getDirectory(PROYECT_NAME+"/"+nombre, {create: true}, function(dirEntry) {
 	  		controls_hide();
 	  		load_files_fs(fs);
 
@@ -455,6 +455,7 @@ function file_rename_fs(pwd,original_,new_)
 }
 function file_folder_rename_fs(pwd,original_,new_)
 {	
+	console.log("renombrar de "+original_+" a "+new_);
 	window.requestFileSystem(PERSISTENT, 50*1024*1024, function(fs){				
 		fs.root.getDirectory(original_, {}, function(dirEntry) {
 			fs.root.getDirectory(pwd, {}, function(dirEntry2) {
@@ -533,7 +534,13 @@ function load_files_fs(fs)
 {
     //console.log("load_files_fs");
     $("#directories").html(" ");
-    getAllFileEntries(fs.root.createReader(), $("#directories"),0);      
+    fs.root.getDirectory(PROYECT_NAME, {create: true}, function(dirEntry)
+    {
+  		var dirReader = dirEntry.createReader();
+  		getAllFileEntries(dirReader, $("#directories"),0);
+  	}, errorHandler);
+	
+          
 }
   
   

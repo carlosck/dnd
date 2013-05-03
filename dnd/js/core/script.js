@@ -491,7 +491,7 @@ function decode64(input) {
 //***********************************************************************************files
 function escribe_archivo(fs,nombre) {
 
-  fs.root.getFile(nombre, {create: true}, function(fileEntry) {
+  fs.root.getFile(PROYECT_NAME+"/"+nombre, {create: true}, function(fileEntry) {
 
     // Create a FileWriter object for our FileEntry (log.txt).
     fileEntry.createWriter(function(fileWriter) {
@@ -517,6 +517,7 @@ function escribe_archivo(fs,nombre) {
 		 $("body").bind('keyup', index_key_up);
          $("body").focus();
          tecla_s_presionada=false;
+         controls_hide();
        }
       
       fileWriter.seek(fileWriter.length); // Start write position at EOF.
@@ -531,7 +532,7 @@ function escribe_archivo(fs,nombre) {
 }
 function lee_archivo(fs,nombre)
 {
-	fs.root.getFile(nombre, {}, function(fileEntry) {
+	fs.root.getFile(PROYECT_NAME+"/"+nombre, {}, function(fileEntry) {
 
     // Get a File object representing the file,
     // then use FileReader to read its contents.
@@ -602,7 +603,7 @@ function errorHandler(e) {
 }
 function div_importa_images(fs,file,eldivs,lafuncion) {
 console.log("div_importa_images");
-  fs.root.getFile(file.name, {create: true}, function(fileEntry) {
+  fs.root.getFile(PROYECT_NAME+"/"+file.name, {create: true}, function(fileEntry) {
 
     // Create a FileWriter object for our FileEntry (log.txt).
     fileEntry.createWriter(function(fileWriter) {
