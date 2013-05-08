@@ -5,6 +5,7 @@ var zipWriter2=null;
 //variable para editar nombre de archivo
 var nombre_anterior="";
 var elemento_arenombrar="";
+var zip=null;
 $(function() {
 	//read_directory();
 	//getAllFileEntries();
@@ -47,23 +48,36 @@ $(function() {
 		  				$("#directories")[0].addEventListener('mouseout', index_mouse_out, false);
 		  				$("#export_files").bind("click",function(event){
 		  					event.preventDefault();
-		  					//*/
+		  					/*/
+		  					zip.useWebWorkers = true;
+		  					zip.workerScriptsPath = "";
+		  					root_zip=new zip.fs.FS();
 		  					zip.createWriter(new zip.BlobWriter("application/zip"), function(zipWriter) {
 		  						zipWriter2=zipWriter;
 			  					fs.root.getDirectory(PROYECT_NAME, {create: true}, function(dirEntry)
 							    {
 							  		var dirReader = dirEntry.createReader();
-							  		zipAllFileEntries(dirReader,zipWriter2,null);
+							  		
+							  		console.log(root_zip);
+							  		zipAllFileEntries(dirReader,zipWriter2,root_zip.root);
 							  	}, errorHandler);
 		  							  					
 		  					}, errorHandler);
 		  				//*/
 		  				//export_files();
+		  				zip = new JSZip();
+		  				fs.root.getDirectory(PROYECT_NAME, {create: true}, function(dirEntry)
+							    {
+							  		var dirReader = dirEntry.createReader();
+							  		
+							  		//console.log(zip);
+							  		zipAllFileEntries(dirReader,zip,null);
+							  	}, errorHandler);
 		  				});
 		  				$("#export_close").bind("click",function(event)
 		  				{
 							event.preventDefault();
-							close_zip(zipWriter2);
+							close_zip(zip);
 						});
 						//zip.useWebWorkers = false;
 		  			}
@@ -708,15 +722,20 @@ function zipAllFileEntries(dirReader,zipWriter,carpeta)
   	  if (entry.isDirectory) 
   	  {
   	 		console.log(entry.name);
+  	 		//carpeta.addDirectory(entry.name);
+  	 		/*/
   	 		zipWriter.add(entry.name,null,function(){
   	 		zipAllFileEntries(entry.createReader(),zipWriter ,carpeta);
   	 	},null,
   	 	{"directory":true} );
+		//*/
+		var folder = zipWriter.folder(entry.name);
+  	 		zipAllFileEntries(entry.createReader(),folder ,null);
   	      	    
   	  } 
   	  else 
   	  {
-  	      console.log(entry)
+  	      
   	      
   	      fs.root.getFile(entry.fullPath, {}, function(fileEntry) 
   	        {
@@ -726,28 +745,39 @@ function zipAllFileEntries(dirReader,zipWriter,carpeta)
 
   	      		       reader.onloadend = function(e) {
   	      		         //var txtArea = document.createElement('textarea');
-  	      		         blobs = this.result;
-  	      		         console.log(blobs);
+  	      		         blobs = reader.result;
+  	      		         var name=file.name;
+  	      		         if(file.name=="index.html")
+  	      		         {
+							blobs=blobs.replace("filesystem:http://localhost/persistent/"+PATH,"/")
+							name="_index.html";
+  	      		         }
+  	      		         
+  	      		         console.log(reader.result);
   	      		         blob = new Blob([blobs], {
   	      		         	type : file.type
   	      		         	//type : "text/plain"
   	      		         });
+
 						 console.log("------");
   	      		         
   	      		         console.log(file.name);
   	      		         console.log(file.type);
-  	      		           	      		             
+  	      		         zipWriter.file(file.name, blobs);
+  	      		         //carpeta.addBlob(file.name, blob)
+  	      		           	//*/      		             
   	      		             // use a BlobReader object to read the data stored into blob variable  	      		             
-  	      		             zipWriter.add(file.name, new zip.BlobReader(blob), function() {
+  	      		            // zipWriter.add(file.name, new zip.BlobReader(blob), function() {
   	      		               // close the writer and calls callback function
   	      		               
-  	      		             });
+  	      		            // });
+							//*/
   	      		           
 
   	      		         
   	      		       };
 
-  	      		       reader.readAsText(file);
+  	      		       reader.readAsDataURL(file);
   	      		    }, errorHandler);
 
   	      		
@@ -762,12 +792,13 @@ function zipAllFileEntries(dirReader,zipWriter,carpeta)
 
 function close_zip(zipWriter)
 {
-	zipWriter2.close(function(blob) 
-	{
-		var blobURL = URL.createObjectURL(blob);
-		console.log(blobURL);
-		zipWriter = null;
-	});
+	var blobLink = document.getElementById('export_download');
+	  try {
+	    blobLink.download = "hello.zip";
+	    blobLink.href = window.URL.createObjectURL(zipWriter.generate({type:"blob"}));
+	  } catch(e) {
+	    blobLink.innerHTML += " (not supported on this browser)";
+	  }
 }
 
 
