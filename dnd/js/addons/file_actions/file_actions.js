@@ -1,7 +1,7 @@
 //variable para que los divs de los links no se repitan
 var file_count=0;
 var fs_temp=null;
-
+var zipWriter2=null;
 //variable para editar nombre de archivo
 var nombre_anterior="";
 var elemento_arenombrar="";
@@ -45,7 +45,27 @@ $(function() {
 		  						  				
 		  				$("#directories")[0].addEventListener('mouseover', index_mouse_over, false);
 		  				$("#directories")[0].addEventListener('mouseout', index_mouse_out, false);
-		  				
+		  				$("#export_files").bind("click",function(event){
+		  					event.preventDefault();
+		  					//*/
+		  					zip.createWriter(new zip.BlobWriter("application/zip"), function(zipWriter) {
+		  						zipWriter2=zipWriter;
+			  					fs.root.getDirectory(PROYECT_NAME, {create: true}, function(dirEntry)
+							    {
+							  		var dirReader = dirEntry.createReader();
+							  		zipAllFileEntries(dirReader,zipWriter2,null);
+							  	}, errorHandler);
+		  							  					
+		  					}, errorHandler);
+		  				//*/
+		  				//export_files();
+		  				});
+		  				$("#export_close").bind("click",function(event)
+		  				{
+							event.preventDefault();
+							close_zip(zipWriter2);
+						});
+						//zip.useWebWorkers = false;
 		  			}
 		  		});//fin de ajax	
 		  }
@@ -109,7 +129,7 @@ function file_actions()
 
 		  elemento_arenombrar=null;
 	});
-
+	
 }
 //funcion para que el js sepa que hacer cuando dropea el cuadro de link del menu al stage
 function file_actions_menu()
@@ -598,9 +618,10 @@ if(laurl.length>1)
 }
  for(var i=0;i<files.length;i++)
  {
- 	console.log("crear "+laurl+files.name);
+ 	
  	var file=files[i];
-  fs.root.getFile(laurl+file.name, {create: true}, function(fileEntry) {
+ 	console.log("crear "+laurl+file.name);
+  fs.root.getFile(PROYECT_NAME+laurl+file.name, {create: true}, function(fileEntry) {
 
     // Create a FileWriter object for our FileEntry (log.txt).
     fileEntry.createWriter(function(fileWriter) {
@@ -635,6 +656,118 @@ if(laurl.length>1)
   }, errorHandler);
 }
 
+}
+
+function export_files() 
+{	
+  console.log("export_files");
+  fs.root.getFile(PROYECT_NAME+"/index.html", {}, function(fileEntry) 
+    {
+  		
+  		    fileEntry.file(function(file) {
+  		       var reader = new FileReader();
+  		       console.log(file);
+  		       reader.onloadend = function(e) {
+  		         //var txtArea = document.createElement('textarea');
+  		         blobs = this.result;
+  		         blob = new Blob([ blobs ], {
+  		         	type : file.type
+  		         });
+  		         zip.createWriter(new zip.BlobWriter("application/zip"), function(zipWriter) {
+  		             
+  		             // use a BlobReader object to read the data stored into blob variable
+  		             zipWriter.add("index.html", new zip.BlobReader(blob), function() {
+  		               // close the writer and calls callback function
+  		               zipWriter.close(function(blob) 
+  		               {
+						var blobURL= URL.createObjectURL(blob) ;
+						console.log(blobURL);
+						zipWriter = null;
+						});
+  		             });
+  		           }, onerror);
+
+  		         
+  		       };
+
+  		       reader.readAsText(file);
+  		    }, errorHandler);
+
+  		
+  	}, errorHandler);
+
+  
+}
+function zipAllFileEntries(dirReader,zipWriter,carpeta) 
+{	
+  
+  dirReader.readEntries(function(entries)
+  {
+  	for (var i = 0, entry; entry = entries[i]; ++i) {
+  		console.log(entry.name);
+  	  if (entry.isDirectory) 
+  	  {
+  	 		console.log(entry.name);
+  	 		zipWriter.add(entry.name,null,function(){
+  	 		zipAllFileEntries(entry.createReader(),zipWriter ,carpeta);
+  	 	},null,
+  	 	{"directory":true} );
+  	      	    
+  	  } 
+  	  else 
+  	  {
+  	      console.log(entry)
+  	      
+  	      fs.root.getFile(entry.fullPath, {}, function(fileEntry) 
+  	        {
+  	      		console.log(fileEntry);
+  	      		    fileEntry.file(function(file) {
+  	      		       var reader = new FileReader();
+
+  	      		       reader.onloadend = function(e) {
+  	      		         //var txtArea = document.createElement('textarea');
+  	      		         blobs = this.result;
+  	      		         console.log(blobs);
+  	      		         blob = new Blob([blobs], {
+  	      		         	type : file.type
+  	      		         	//type : "text/plain"
+  	      		         });
+						 console.log("------");
+  	      		         
+  	      		         console.log(file.name);
+  	      		         console.log(file.type);
+  	      		           	      		             
+  	      		             // use a BlobReader object to read the data stored into blob variable  	      		             
+  	      		             zipWriter.add(file.name, new zip.BlobReader(blob), function() {
+  	      		               // close the writer and calls callback function
+  	      		               
+  	      		             });
+  	      		           
+
+  	      		         
+  	      		       };
+
+  	      		       reader.readAsText(file);
+  	      		    }, errorHandler);
+
+  	      		
+  	      	}, errorHandler);
+
+  	  }
+  	}
+
+  });
+ 
+}//fin de la función
+
+function close_zip(zipWriter)
+{
+	zipWriter2.close(function(blob) 
+	{
+		var blobURL = URL.createObjectURL(blob);
+		console.log(blobURL);
+		zipWriter = null;
+	});
 }
 
 
