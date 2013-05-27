@@ -747,13 +747,18 @@ function zipAllFileEntries(dirReader,zipWriter,carpeta)
   	      		         //var txtArea = document.createElement('textarea');
   	      		         blobs = reader.result;
   	      		         var name=file.name;
-  	      		         if(file.name=="index.html")
+  	      		         console.log(file.name);
+  	      		         console.log(file.type);
+  	      		         if(name.trim()=="index.html")
   	      		         {
-							blobs=blobs.replace("filesystem:http://localhost/persistent/"+PATH,"/")
+							blobs=blobs.replace("filesystem:http://localhost/persistent/"+PROYECT_NAME,".")
+							blobs="<html><head>"+blobs+"</body></html>";
+							blobs.replace("document.write('<script src=\"dnd/js/core/menu_actions.js\"><\/script>');","")
 							name="_index.html";
+							console.log("el index");
   	      		         }
   	      		         
-  	      		         console.log(reader.result);
+  	      		         
   	      		         blob = new Blob([blobs], {
   	      		         	type : file.type
   	      		         	//type : "text/plain"
@@ -761,9 +766,8 @@ function zipAllFileEntries(dirReader,zipWriter,carpeta)
 
 						 console.log("------");
   	      		         
-  	      		         console.log(file.name);
-  	      		         console.log(file.type);
-  	      		         zipWriter.file(file.name, blobs);
+  	      		         
+  	      		         zipWriter.file(name, blobs,{base64: false, binary: true});
   	      		         //carpeta.addBlob(file.name, blob)
   	      		           	//*/      		             
   	      		             // use a BlobReader object to read the data stored into blob variable  	      		             
@@ -777,7 +781,7 @@ function zipAllFileEntries(dirReader,zipWriter,carpeta)
   	      		         
   	      		       };
 
-  	      		       reader.readAsDataURL(file);
+  	      		       reader.readAsBinaryString(file);
   	      		    }, errorHandler);
 
   	      		
