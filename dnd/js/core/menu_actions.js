@@ -32,7 +32,7 @@ function bind_menu_actions()
 	});// fin de live 
 	$("#controls_div_centrar_centro").bind('click', function(e) {
 		e.preventDefault();
-		console.log("clickkk");
+		//console.log("clickkk");
 		delete_properties(target_menu,align_types);
 		target_menu.addClass("center");
 		target_menu.css("margin-left","auto");
@@ -74,7 +74,14 @@ function bind_menu_actions()
 		}
 	  
 	});
-
+	$("#controls_div_rename_input").bind('focus',function(event){
+		event.preventDefault();
+		body_keyoff();
+	});
+	$("#controls_div_rename_input").bind('lostfocus',function(event){
+		event.preventDefault();
+		body_keyon();
+	});
 	$("#controls_div_rename_save").bind('click', function(e) {
 		e.preventDefault();
 		var valor=$("#controls_div_rename_input").val();
@@ -103,6 +110,9 @@ function bind_menu_actions()
 	$("#controls_div_delete_save").bind('click', function(e) {
 		e.preventDefault();	
 			controls_hide();
+			console.log("--------<");
+			console.log(target_menu);
+			console.log("--------<");
 			target_menu.remove();
 			target_menu=null;			
 	});// fin de live 
@@ -271,5 +281,15 @@ function controls_show(tipo)
 }
 function controls_hide()
 {
+	console.log("controls_hide");
+	console.log(body_live_updates.length);
+	if(body_live_updates.length>0)
+	{
+		for(var i=0;i<body_live_updates;i++)
+		{
+			console.log("funciona");
+			body_live_updates[i]();
+		}
+	}
 	$("#controls").hide();
 }

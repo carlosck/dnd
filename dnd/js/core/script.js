@@ -19,6 +19,7 @@ var ruta_imagen_temporal=null;
 var escribiendo=false;
 var target_id_escribiendo=null;
 var drop_actions=new Object();
+var body_live_updates=Array();
 
 //esta funcion-objeto es para poder asignar acciones desde otro js si se llegara a necesitar
 
@@ -174,7 +175,7 @@ function index_mouse_out(e)
 {
 	e.preventDefault();
 	e.stopPropagation();
-	var target_id=$("#"+event.target.id);
+	var target_id=$("#"+e.target.id);
 	
 	$("#"+e.target.id).removeClass("mouseover").removeClass("selected");
 
@@ -189,7 +190,7 @@ function index_mouse_down(event)
 	var target_id=$("#"+event.target.id);
 	if(event.which==3)
 	{		
-		console.log("click "+event.which);
+		
 		target_menu=target_id;
 		var str_clase=target_menu.attr('class');			
 		var inicia=str_clase.indexOf("ismenu_");

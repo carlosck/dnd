@@ -2,23 +2,25 @@
 <head>
 	<script src="dnd/js/libs/jquery-1.9.1.js"></script>
 	<script>
-	$(function() 
+	/*$(function() 
 	{
 		$('#elmenu').load('dnd/menu.html');
 		$('#archivos').load('dnd/menu_files.html');
 		$('#elindex').load('index.html');
-	});
+	});*/
 	</script>
 </head>
 <body>
 	<div id="elmenu" style="width: 100%;height: 100px;clear: both;">
-<!-- <iframe width="100%" src="dnd/menu.html" height="100px"></iframe> -->
+		<iframe width="100%" src="dnd/menu.html" height="100px"></iframe>
+	</div>
+<div id="archivos" style="width: 10%;height: 100%;float: left;">
+	<iframe src="dnd/menu_files.html" width="100%" height="50%"></iframe>
+	<iframe id="menu_dom" src="dnd/menu_dom.html" width="100%" height="50%"></iframe>
 </div>
-<div id="archivos" style="width: 10%;height: 100%px;float: left;">
-	<!-- <iframe src="dnd/menu_files.html" width="100%" height="100%"></iframe> -->
+<div id="elindex" style="width: 90%;height: 80%;float: left;">
+	<iframe id="editor_main" src="index.html" width="100%" height="800px"></iframe>
 </div>
-<div id="elindex" style="width: 90%;height: 100%;float: left;">
-	<!-- <iframe src="index.html" width="100%" height="800px"></iframe> -->
-</div>
+
 </body>
 </html>
