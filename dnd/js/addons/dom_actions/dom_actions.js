@@ -270,7 +270,7 @@ function dom_Drop(event)
 	*/
 	event.stopPropagation();
 	event.target.id=event.target.id.replace("dom_","");	
-	console.log()
+	console.log();
 	$(top.document).find("#editor_main")[0].contentWindow.index_Drop(event);
 }
 

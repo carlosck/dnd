@@ -6,6 +6,7 @@ var zipWriter2=null;
 var nombre_anterior="";
 var elemento_arenombrar="";
 var zip=null;
+var menu_file=false;
 $(function() {
 	//read_directory();
 	//getAllFileEntries();
@@ -34,7 +35,13 @@ $(function() {
 		  			data: {},
 		  			dataType: "text",
 		  			success: function(data) {		 			
-		  				$("#ckmenu_container").append(data);
+		  				if(!menu_file)
+		  				{
+		  					$("#ckmenu_container").append(data);
+		  					menu_file=true;
+		  				}
+		  				
+		  				
 		  				$("#new_folder")[0].addEventListener('dragstart', menu_file_dragStart, false);   
 		  				$("#new_folder")[0].addEventListener('drop', menu_file_drop, false);
 		  				$("#new_folder").attr("draggable",'true');
@@ -207,12 +214,12 @@ function file_actions_menu()
 			{
 				console.log("index_dragt");
 				console.log(event_);
-				alert("index_dragt");
+				
 				var laurl=event_.dataTransfer.getData("Laurl");
 				console.log(event_.dataTransfer.getData("Text"));
 				console.log("|laurl|"+laurl+"|");
 
-				alert(laurl.substring(laurl.indexOf(".")));
+				
 				switch(laurl.substring(laurl.indexOf(".")))
 				{
 				case ".jpg":
@@ -227,6 +234,10 @@ function file_actions_menu()
 						if(eldiv.is("a"))
 						{
 							eldiv.attr("href",laurl);
+						}
+						if(eldiv.is("body"))
+						{
+							window.requestFileSystem(PERSISTENT, 5*1024*1024, function(fs){lee_archivo(fs,laurl.replace(PROYECT_NAME+"/",""))}, errorHandler);
 						}
 				}
 				return false;

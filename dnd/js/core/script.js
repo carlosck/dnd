@@ -429,12 +429,19 @@ function handleReaderLoad_html(evt)
 	//console.log("fin="+fin_body);
 	//$("body").html(html.substring(inicio_body+6,fin_body));
 	$("html").html(html);
+
+	console.log(html);
 	//$("html").html(html);
 	if(!$("body").hasClass("index_dragt"))
 	{
 		$("body").addClass("index_dragt")
 	}
+	$("#controls").html("");
+	console.log("**************************");
+	console.log($("#controls").html());
+	console.log("**************************");
 	inicia();
+
 }
 
 
@@ -533,6 +540,7 @@ function escribe_archivo(fs,nombre) {
 }
 function lee_archivo(fs,nombre)
 {
+	console.log(PROYECT_NAME+"/"+nombre);
 	fs.root.getFile(PROYECT_NAME+"/"+nombre, {}, function(fileEntry) {
 
     // Get a File object representing the file,
@@ -561,6 +569,7 @@ function lee_archivo(fs,nombre)
          $("#asistente").remove();
         cont=$("body").find('div[id^=div_]').length;
 		console.log("contador ="+cont);
+		$("#controls").html("");
          //setTimeout(inicia,2000);
          inicia();
         $("#controles_div").hide();
