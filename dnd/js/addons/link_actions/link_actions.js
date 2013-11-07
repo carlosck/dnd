@@ -88,24 +88,27 @@ function link_actions()
 		console.log(target_menu.css("background-image"))
 		if(target_menu.css("background-image")!="none")
 		{
-			ruta_imagen_temporal=target_menu.css("background-image")
-			var pos_inicial=ruta_imagen_temporal.indexOf("(")+1;
-			var pos_final=ruta_imagen_temporal.indexOf(")");
-			ruta_imagen_temporal=ruta_imagen_temporal.substring(pos_inicial,pos_final);
-			target_menu.css({"background-image":"url('"+ruta_imagen_temporal+"')"});
-			target_menu.removeClass("roll_over");
+			eldiv=target_menu;
+			ruta=object_data.ruta_imagen
+			ruta_imagen_temporal=target_menu.css("background-image");
+			eldiv=target_menu.css("background-image")
+			var pos_inicial=ruta.indexOf("(")+1;
+			var pos_final=ruta.indexOf(")");
+			ruta=ruta.substring(pos_inicial,pos_final);
+			eldiv.css({"background-image":"url('"+ruta+"')"});
+			eldiv.removeClass("roll_over");
 		}
 		else
 		{
-			target_menu.css({"background-image":"url('"+ruta_imagen_temporal+"')"});	
+			eldiv.css({"background-image":"url('"+ruta+"')"});	
 		}
 		
-		console.log(target_menu);
-		console.log(ruta_imagen_temporal);
-		target_menu.hide(100,function(){
+		console.log(eldiv);
+		console.log(ruta);
+		eldiv.hide(100,function(){
 			$(this).show();
 		});
-		target_menu=null;
+		
 		controls_hide();	
 	});//fin de live
 	$("#controls_link_rollover").bind('click', function(e) {
@@ -114,19 +117,23 @@ function link_actions()
 		controls_hide();
 		console.log("------------------------")
 		console.log(target_menu.css("background-image"))
+		target_menu.html("");
 		if(target_menu.css("background-image")!="none")
 		{
 			ruta_imagen_temporal=target_menu.css("background-image");
 			var pos_inicial=ruta_imagen_temporal.indexOf("(")+1;
 			var pos_final=ruta_imagen_temporal.indexOf(")");
 			ruta_imagen_temporal=ruta_imagen_temporal.substring(pos_inicial,pos_final);
+			
 			target_menu.css({"background-image":"url('"+ruta_imagen_temporal+"')"});
 			target_menu.addClass("roll_over");
 		}
 		else
 		{
-			target_menu.css({"background-image":"url('"+ruta_imagen_temporal+"')"});
-			target_menu.addClass("roll_over");	
+			eldiv=object_data.div_actual;
+			ruta=object_data.ruta_imagen
+			eldiv.css({"background-image":"url('"+ruta+"')"});
+			eldiv.addClass("roll_over");	
 		}
 		
 		
@@ -139,14 +146,14 @@ function link_actions()
 			console.log("oimagen cargada" +this.width+" "+this.height);
 			var width=this.width;
 			var height=this.height;
-			target_menu.css("width",width+"px");			
-			target_menu.css("height",parseInt((height/2))+"px");
-			target_menu.hide(100,function(){
+			eldiv.css("width",width+"px");			
+			eldiv.css("height",parseInt((height/2))+"px");
+			eldiv.hide(100,function(){
 				$(this).show();
 			});
 			
-			console.log(target_menu.css("width"));			
-			console.log(target_menu.css("height"));
+			console.log(eldiv.css("width"));			
+			console.log(eldiv.css("height"));
 			
 			target_menu=null;
 			/*target_menu_local.hover(function(){
@@ -156,7 +163,7 @@ function link_actions()
 			target_menu=null;
 			target_menu_local=null;
 		}
-		img.src=ruta_imagen_temporal;
+		img.src=ruta;
 		
 			
 	});//fin de live
@@ -177,7 +184,7 @@ function link_actions_menu()
 function crea_link(e)
 {
 	
-	$("#"+e.target.id).append("<a id='link_"+link_count+"' href='#' class='index_dragt ismenu_link columna4 relative empty block' draggable='true' style=''>link_"+link_count+" ...</div>");
+	$("#"+e.target.id).append("<a id='link_"+link_count+"' href='#' class='index_dragt controls_div controls_link columna4 relative empty block' draggable='true' style=''>link_"+link_count+" ...</div>");
 	link_asign_actions("link_"+link_count);
 	link_count++;
 }

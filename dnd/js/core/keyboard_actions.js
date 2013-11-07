@@ -116,7 +116,7 @@ keyboard_input[67]=new Action_Keyboard(67,
 			muestra_clase=(str_clase.substring(inicia,fin)).replace("ismenu_","");
 			console.log("muestra_clase->"+muestra_clase)
 			controls_active=true;
-			controls_show(muestra_clase);
+			controls_show(str_clase);
 		},
 		function(){			
 			this.active=false;

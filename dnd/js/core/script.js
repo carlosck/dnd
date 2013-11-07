@@ -20,7 +20,7 @@ var escribiendo=false;
 var target_id_escribiendo=null;
 var drop_actions=new Object();
 var body_live_updates=Array();
-
+var object_data=null;
 //esta funcion-objeto es para poder asignar acciones desde otro js si se llegara a necesitar
 
 var DropActions=function(idcode,action_)
@@ -32,7 +32,7 @@ var DropActions=function(idcode,action_)
  	}
 
 $(function() {
-	
+	object_data=new Object();
 	drop_actions["div_element"]=new DropActions("div_element",function(eldiv,event_){
 		eldiv.removeClass("selected");
 		if(eldiv.hasClass("empty"))
@@ -192,12 +192,16 @@ function index_mouse_down(event)
 	{		
 		
 		target_menu=target_id;
-		var str_clase=target_menu.attr('class');			
-		var inicia=str_clase.indexOf("ismenu_");
-		var fin=str_clase.indexOf(" ",inicia);
-		muestra_clase=(str_clase.substring(inicia,fin)).replace("ismenu_","");
-		console.log("muestra_clase->"+muestra_clase)
-		controls_active=true;
+		var str_clase=target_menu.attr('class');
+		console.log(target_menu.attr('class'))			
+		muestra_clase=str_clase;
+		/*if(str_clase.indexOf("ismenu_")!=-1)
+		{
+			var inicia=str_clase.indexOf("ismenu_");
+			var fin=str_clase.indexOf(" ",inicia);
+			muestra_clase=(str_clase.substring(inicia,fin)).replace("ismenu_","");	
+		}*/
+				
 		controls_show(muestra_clase);
 	}
 }
@@ -284,7 +288,7 @@ function asigna_acciones_imagenes(div)
 function crea_div(e)
 {
 	
-	$("#"+e.target.id).append("<div id='div_"+cont+"' class='index_dragt ismenu_div columna4 relative empty' draggable='true' style=''>div_"+cont+" ...</div>");
+	$("#"+e.target.id).append("<div id='div_"+cont+"' class='index_dragt ismenu_div controls_div columna4 relative empty' draggable='true' style=''>div_"+cont+" ...</div>");
 	asigna_acciones("div_"+cont);
 	cont++;
 }

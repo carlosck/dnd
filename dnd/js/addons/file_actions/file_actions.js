@@ -7,6 +7,7 @@ var nombre_anterior="";
 var elemento_arenombrar="";
 var zip=null;
 var menu_file=false;
+var file_exist=false;
 $(function() {
 	//read_directory();
 	//getAllFileEntries();
@@ -150,6 +151,23 @@ function file_actions()
 
 		  elemento_arenombrar=null;
 	});
+
+	$("#file_folder_replace_yes").bind("click",function(event){
+		event.preventDefault();
+		fromurl=$(this).attr("fromurl")
+		tourl=$(this).attr("tourl")
+		file_move_fs(fromurl,tourl);
+		controls_hide();
+	});
+	$("#file_folder_replace_no").bind("click",function(event){
+		event.preventDefault();
+		$(this).attr("fromurl","")
+		$(this).attr("tourl","")		
+		controls_hide();
+	});
+
+	
+				  
 	
 }
 //funcion para que el js sepa que hacer cuando dropea el cuadro de link del menu al stage
@@ -191,7 +209,38 @@ function file_actions_menu()
 				var file_name=$("#"+event_.dataTransfer.getData("elid")).attr("laurl");
 				var file_url_name=eldiv.attr("dirurl");
 				console.log("mover archivo 1->"+file_name+" a"+folder_name);
-				file_move_fs(file_name,folder_name);
+				//filexist
+				array_names=file_name.split("/");
+				nombre=array_names[array_names.length-1]
+
+				//nombre=file_name;
+				// if(nombre.indexOf(PROYECT_NAME+"/")==1)
+				// {	
+				// 	nombre=nombre.replace(PROYECT_NAME+"/","")
+				// }
+				// nombre=nombre.trim();
+				file_exist= false;
+				if(folder_name=="/")
+					folder_name="/"+PROYECT_NAME
+				
+				url=(folder_name+"/"+nombre).trim();
+				console.log("url=->" +url);
+				fs.root.getFile(url, {create: false, exclusive: false}, function(fileEntry) {				 
+				  file_exist=true;
+				  console.log("=========="+file_exist+"==========");
+				  laurl=url
+				  $("#file_folder_replace_yes").attr("fromurl",file_name);
+				  $("#file_folder_replace_yes").attr("tourl",folder_name);
+				  controls_show("controls_files_cont","file_folder_replace")
+				 // console.log(fileEntry);
+				  
+				},function(){
+					console.log("=====d====="+file_exist+"=====s=====");
+					file_move_fs(file_name,folder_name);
+				});
+				
+
+				//
 				found=true;
 				return false;
 			}
@@ -225,9 +274,30 @@ function file_actions_menu()
 				case ".jpg":
 				case ".jpeg":
 				case ".png":
+						clases=eldiv.attr("class");
+						console.log("clases ---->"+clases)
+
 						ruta_imagen_temporal="filesystem:http://localhost/persistent"+laurl;
 						target_menu=eldiv;
-						controls_show();
+						console.log("este")
+						//aqui uso este object global para poder accesar a el desde cualquier addon
+						object_data.div_actual=eldiv
+						object_data.ruta_imagen=ruta_imagen_temporal
+						//despues muestro el menu que le corresponde a su tipo de objeto, link div slider
+						controls_show(clases)
+						// if(clases.indexOf("controls_link")!= -1)
+						// {
+						// 	$("#controls_div_image_background").attr("ruta",ruta_imagen_temporal);
+						// 	$("#controls_div_image_image").attr("ruta",ruta_imagen_temporal);
+						// 	controls_show(clases,"controls_link_background");
+						// }							
+						// else
+						// {
+						// 	$("#controls_link_background").attr("ruta",ruta_imagen_temporal);
+						// 	$("#controls_link_rollover").attr("ruta",ruta_imagen_temporal);
+						// 	controls_show(clases,"controls_div_image");
+						// }
+							
 				break;
 				case ".html":
 				case ".php":
@@ -274,6 +344,10 @@ function file_create(e)
 {
 	console.log("file_create");
 	var laurl=$("#"+e.target.id).attr("laurl");
+	if(laurl=="undefined")
+	{
+		return false
+	}
 	console.log("crear una carpeta en "+laurl);
 	if(laurl!="/")
 	{
@@ -283,7 +357,7 @@ function file_create(e)
 	$("#file_container_input").val('');
 	$("#file_container_input").focus();
 	body_keyoff();
-	show_file_popup();
+	controls_show("controls_files_cont","file_create_new");
 	//$("#"+e.target.id).append("<a id='link_"+file_count+"' href='#' class='index_dragt ismenu_link columna4 relative empty block' draggable='true' style=''>link_"+link_count+" ...</div>");
 	//file_asign_actions("file_"+file_count);
 	//file_count++;
@@ -457,6 +531,13 @@ function directories_file_drag(event)
 }
 function create_directory(nombre)
 {
+	console.log("creando directorio en "+PROYECT_NAME+"/"+nombre)
+	console.log(nombre.indexOf(PROYECT_NAME+"/"))
+	if(nombre.indexOf(PROYECT_NAME+"/")==1)
+	{	
+		nombre=nombre.replace(PROYECT_NAME+"/","")
+	}
+	nombre=nombre.trim();
 	window.webkitStorageInfo.requestQuota(PERSISTENT, 5*1024*1024, function(grantedBytes) {
 	  window.requestFileSystem(PERSISTENT, grantedBytes, function(fs){
 	  	fs.root.getDirectory(PROYECT_NAME+"/"+nombre, {create: true}, function(dirEntry) {
@@ -572,7 +653,7 @@ function file_folder_delete(eldiv)
 }
 function show_file_popup()
 {
-	controls_show();
+	controls_show("file_container");
 }
 
 function load_files_fs(fs)
@@ -603,7 +684,7 @@ function getAllFileEntries(dirReader, eldiv,lvl_)
   	 			name=entry.name+"_"+parseInt(Math.random()*1000);
   	 		}
   	 		
-            cadena="<div id='file_folder_"+name+"' style='margin-left:"+(lvl_*20)+"px' class='columna5 file_folder index_dragt' draggable='true' laurl='"+entry.fullPath+"' dirurl='"+entry.fullPath.replace(entry.name,"")+"'>";
+            cadena="<div id='file_folder_"+name+"' style='margin-left:"+(lvl_*20)+"px' class='columna5 file_folder controls_file_folder index_dragt' draggable='true' laurl='"+entry.fullPath+"' dirurl='"+entry.fullPath.replace(entry.name,"")+"'>";
             cadena+=  '<span >'+ entry.name+ '</span>';
           	cadena+="</div>";
           	//console.log(entry.name+" "+lvl_);
@@ -621,7 +702,7 @@ function getAllFileEntries(dirReader, eldiv,lvl_)
         {
         	name_file=name_file+"_"+parseInt(Math.random()*1000);
         }
-        cadena="<div id='file_file_"+name_file+"' style='margin-left:"+(lvl_*20)+"px' class='columna5 file_file index_dragt' draggable='true' laurl='"+entry.fullPath+"' dirurl='"+entry.fullPath.replace(entry.name,"")+"'>";
+        cadena="<div id='file_file_"+name_file+"' style='margin-left:"+(lvl_*20)+"px' class='columna5 file_file controls_file_file index_dragt' draggable='true' laurl='"+entry.fullPath+"' dirurl='"+entry.fullPath.replace(entry.name,"")+"'>";
         cadena+= '<span ><a href="'+entry.toURL()+'" target="_blank">'+ name+ '</a></span>';
         cadena+="</div>";
         eldiv.append(cadena);
@@ -641,6 +722,11 @@ if(laurl.length>1)
 {
 	laurl=laurl+'/';
 }
+if(laurl.indexOf(PROYECT_NAME+"/")==1)
+{	
+	laurl=laurl.replace(PROYECT_NAME+"/","")
+}
+laurl=laurl.trim();
  for(var i=0;i<files.length;i++)
  {
  	

@@ -124,14 +124,14 @@ function bind_menu_actions()
 		e.preventDefault();	
 			controls_hide();
 			console.log(target_menu.css("background-image"))
-			/*if(target_menu.css("background-image")!=null)
-			{
-
-			}*/
-			target_menu.css({"background-image":"url('"+ruta_imagen_temporal+"')"});
-			target_menu.hide(100,function(){
+			
+			eldiv=object_data.div_actual;
+			ruta=object_data.ruta_imagen
+			eldiv.css({"background-image":"url('"+ruta+"')"});
+			eldiv.hide(100,function(){
 				$(this).show();
 			});
+			if(eldiv.hasClass("empty")) eldiv.html("")
 			target_menu=null;
 			$("body").bind('keydown', index_key_down);
 			$("body").bind('keyup', index_key_up);			
@@ -139,8 +139,11 @@ function bind_menu_actions()
 	$("#controls_div_image_image").bind('click', function(e) {
 		e.preventDefault();	
 			controls_hide();
-			target_menu.append("<img id='img_"+imagen_contador+"' src='"+ruta_imagen_temporal+"' class='index_drag_img' />");
-			target_menu.removeClass("empty");
+			eldiv=object_data.div_actual;
+			ruta=object_data.ruta_imagen
+			if(eldiv.hasClass("empty")) eldiv.html("")
+			eldiv.append("<img id='img_"+imagen_contador+"' src='"+ruta+"' class='index_drag_img' />");
+			eldiv.removeClass("empty");
 			imagen_contador++;		
 			target_menu=null;
 			$("body").bind('keydown', index_key_down);
@@ -249,12 +252,28 @@ function assistant(content)
 	$("#assistant").html(content);
 }
 
-function controls_show(tipo)
+function controls_show(tipo,element_to_show)
 {
+	console.log("tipo= "+tipo)
 	if(tipo!=null)		
 	{
-		$(".controls_item").hide();
-		$("#controls_"+tipo).show();
+		$(".controls_item").css("display","none");
+		var array_menu=tipo.split(" ")
+		for(var i=0;i<array_menu.length;i++)
+		{			
+			if(array_menu[i].indexOf("controls_")==0)
+			{
+				tipomenu=array_menu[i].replace("controls_","").trim();
+				console.log(tipomenu);
+				$(".controls_"+tipomenu).find(".section").css("display","none");
+				$(".controls_"+tipomenu).css("display","block");		
+			}
+			
+		}
+		if(element_to_show!=null)
+		$("#"+element_to_show).show();
+		
+		
 	}
 	else
 	{
